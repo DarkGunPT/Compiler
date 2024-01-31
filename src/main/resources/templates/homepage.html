@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Compiler</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        #output {
+            height: 200px;
+            overflow: auto;
+            border: 1px solid #000;
+            padding: 10px;
+            background-color: #000;
+            color: #00ff00;
+        }
+
+        h3 {
+            padding-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Online Compiler</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <h3>Upload Directory</h3>
+        <input type="file" id="directory" name="directory[]" webkitdirectory mozdirectory msdirectory multiple>
+
+        <h3>Code</h3>
+        <ol id="code"></ol>
+
+        <h3>Output</h3>
+        <pre id="output"></pre>
+
+        <h3>Compile & Run</h3>
+        <button type="button" id="compile" class="btn btn-primary">Execute ►</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#file').change(function () {
+            $('#code').empty()
+            $('#directory').val('')
+            let files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let li = document.createElement('li');
+                    li.textContent = e.target.result;
+                    $('#code').append(li);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        $('#directory').change(function () {
+            $('#code').empty()
+            $('#file').val('')
+
+            let files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let li = document.createElement('li');
+                    li.textContent = e.target.result;
+                    $('#code').append(li);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        $('#compile').click(function () {
+            const formData = new FormData($('#uploadForm')[0]);
+
+            $.ajax({
+                url: 'http://localhost:8080/compile',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    try {
+                        var jsonResponse = JSON.parse(response);
+
+                        if (jsonResponse.output) {
+                            console.log('Compilação bem-sucedida. Saída:', jsonResponse.output);
+                            $('#output').text(jsonResponse.output);
+                        } else if (jsonResponse.STATUS) {
+                            console.STATUS('Erro:', jsonResponse.STATUS);
+                            $('#output').text('Erro: ' + jsonResponse.STATUS);
+                        } else {
+                            console.STATUS('Resposta inválida do servidor.');
+                            $('#output').text('Erro: Resposta inválida do servidor.');
+                        }
+                    } catch (e) {
+                        console.STATUS('Erro ao analisar a resposta JSON:', e);
+                        $('#output').text('Erro: Falha ao processar a resposta do servidor.');
+                    }
+                },
+                STATUS: function (xhr, status, STATUS) {
+                    console.STATUS('Erro:', xhr.responseText);
+                    $('#output').text('Erro: ' + xhr.responseText);
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>
