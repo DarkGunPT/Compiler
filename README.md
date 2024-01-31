@@ -1,7 +1,7 @@
 # Online Compilation&Build System
 <p> Online project that provide a compilation/build system provided with an appropriate web API.</p> 
 <p>The Web API and server-side implementation will incorporate Web API design patterns and classic Gang of Four (GoF) design patterns</p>
-a. GoF Design Patterns:
+GoF Design Patterns:
 
   - Singleton: Implement a central build queue or manager as a singleton pattern 
     to ensure that only one build is processed at a time.
@@ -19,7 +19,7 @@ a. GoF Design Patterns:
   - Adapter pattern: Use this pattern to provide the system with the capability to 
     handle different external build/compile systems.
     
-b. Web API Design Patterns:
+Web API Design Patterns:
 
   - Resource oriented API: The API should be resource-oriented.
     
